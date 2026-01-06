@@ -40,11 +40,25 @@ def clean_orders():
     df.to_csv(os.path.join(DATA_CLEANED, "orders_cleaned.csv"), index=False)
     print("Cleaned shape:", df.shape)
 
+def clean_order_items():
+    print("\n--- Cleaning Order Items ---")
+    df = pd.read_csv(os.path.join(DATA_RAW, "olist_order_items_dataset.csv"))
+    print("Raw shape:", df.shape)
+    df = df.dropna(subset=["order_id", "product_id"])
+    df = df[df["price"] > 0]
+    df = df[df["freight_value"] >= 0]
+    df["shipping_limit_date"] = pd.to_datetime(
+        df["shipping_limit_date"], errors="coerce"
+    )
+    df.to_csv(os.path.join(DATA_CLEANED, "order_items_cleaned.csv"), index=False)
+    print("Cleaned shape:", df.shape)
+
 
 def main():
     print("Starting data cleaning pipeline...")
     clean_customers()
     clean_orders()
+    clean_order_items()
     print("Data cleaning completed successfully.")
 
 
