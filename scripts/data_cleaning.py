@@ -53,12 +53,40 @@ def clean_order_items():
     df.to_csv(os.path.join(DATA_CLEANED, "order_items_cleaned.csv"), index=False)
     print("Cleaned shape:", df.shape)
 
+def clean_products():
+    print("\n--- Cleaning Products ---")
+
+    df = pd.read_csv(os.path.join(DATA_RAW, "olist_products_dataset.csv"))
+    print("Raw shape:", df.shape)
+    df = df.dropna(subset=["product_id"])
+    df["product_category_name"] = (
+        df["product_category_name"]
+        .fillna("unknown")
+        .str.lower()
+        .str.strip()
+    )
+    df = df[["product_id", "product_category_name"]]
+    df.to_csv(os.path.join(DATA_CLEANED, "products_cleaned.csv"), index=False)
+    print("Cleaned shape:", df.shape)
+
+def clean_payments():
+    print("\n--- Cleaning Payments ---")
+    df = pd.read_csv(os.path.join(DATA_RAW, "olist_order_payments_dataset.csv"))
+    print("Raw shape:", df.shape)
+    df = df.dropna(subset=["order_id"])
+    df = df[df["payment_value"] > 0]
+    df["payment_type"] = df["payment_type"].str.lower().str.strip()
+    df.to_csv(os.path.join(DATA_CLEANED, "payments_cleaned.csv"), index=False)
+    print("Cleaned shape:", df.shape)
+
 
 def main():
     print("Starting data cleaning pipeline...")
     clean_customers()
     clean_orders()
     clean_order_items()
+    clean_products()
+    clean_payments()
     print("Data cleaning completed successfully.")
 
 
